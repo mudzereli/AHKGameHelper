@@ -1,5 +1,6 @@
 # Specific Stuff
 *.ini
+*.xcf
 
 # Windows image file caches
 Thumbs.db
