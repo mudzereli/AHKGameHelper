@@ -659,10 +659,10 @@ ACTIVE_WINDOW_CHECK:
             y := _y + ((_h + SETTING_CROSSHAIR_OFFSET_Y - SETTING_CROSSHAIR_WIDTH) / 2)
             WinMove, CH_INNER_H, , % x, % y
 
-            if((WinActive(SETTING_MATCH_WINDOW_TITLE_NAME) or WinActive(PROGRAM_NAME)) and !WinExist("CH_OUTER_V"))
+            if(WinActive(SETTING_MATCH_WINDOW_TITLE_NAME) and !WinExist("CH_OUTER_V"))
                 CrossHairOverlay.Show()
             Else
-                If WinExist("CH_OUTER_V") and !WinActive(SETTING_MATCH_WINDOW_TITLE_NAME) and !WinActive(PROGRAM_NAME)
+                If WinExist("CH_OUTER_V") and !WinActive(SETTING_MATCH_WINDOW_TITLE_NAME)
                     CrossHairOverlay.Hide()
         } else {
             SetTimer, CROSSHAIR_UPDATE, Off
