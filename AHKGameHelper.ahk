@@ -2,7 +2,7 @@
 
 PROGRAM_NAME := "AHK Game Helper"
 HUD_NAME := "AHKGameHUD"
-VERSION := "1.0.0"
+VERSION := "1.0.1"
 KEYBINDS := []
 BINDABLE_KEYS := "F1|F2|F3|F4|F5|F6|F7|F8|F9|F10|F11|F12"
 BINDABLE_KEYS := BINDABLE_KEYS . "|A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z"
@@ -193,23 +193,33 @@ class HUD
 class CrossHairOverlay
 {
     __New(thickness,height,border_width,offset_x,offset_y,outline,inner) {
+        if SETTING_MATCH_WINDOW_TITLE
+            WinGetPos, _x, _y, _w, _h, % SETTING_MATCH_WINDOW_TITLE_NAME
+        if not _x
+            _x := 0
+        if not _y
+            _y := 0
+        if not _w
+            _w := A_ScreenWidth
+        if not _h
+            _h := A_ScreenHeight
         _thickness := thickness + (border_width * 2)
         _height := height + (border_width * 2)
         ; -- vertical outer part
-        x := (A_ScreenWidth + offset_x - _thickness) / 2 
-        y := (A_ScreenHeight + offset_y - _height) / 2
+        x := (_x + _w + offset_x - _thickness) / 2 
+        y := (_y + _h + offset_y - _height) / 2
         CrossHairOverlay.DrawBar("CH_OUTER_V",x,y,_thickness,_height,outline)
         ; -- horizontal outer part
-        x := (A_ScreenWidth + offset_x - _height) / 2 
-        y := (A_ScreenHeight + offset_y - _thickness) / 2
+        x := (_x + _w + offset_x - _height) / 2 
+        y := (_y + _h + offset_y - _thickness) / 2
         CrossHairOverlay.DrawBar("CH_OUTER_H",x,y,_height,_thickness,outline)
         ; -- vertical inner part
-        x := (A_ScreenWidth + offset_x - thickness) / 2 
-        y := (A_ScreenHeight + offset_y - height) / 2
+        x := (_x + _w + offset_x - thickness) / 2 
+        y := (_y + _h + offset_y - height) / 2
         CrossHairOverlay.DrawBar("CH_INNER_V",x,y,thickness,height,inner)
         ; -- horizontal inner part
-        x := (A_ScreenWidth + offset_x - height) / 2 
-        y := (A_ScreenHeight + offset_y - thickness) / 2
+        x := (_x + _w + offset_x - height) / 2 
+        y := (_y + _h + offset_y - thickness) / 2
         CrossHairOverlay.DrawBar("CH_INNER_H",x,y,height,thickness,inner)
         SetTimer, CROSSHAIR_UPDATE, 500
     }
@@ -618,7 +628,37 @@ ACTIVE_WINDOW_CHECK:
         return
 
     CROSSHAIR_UPDATE:
+
         if(SETTING_MATCH_WINDOW_TITLE) {
+            WinGetPos, _x, _y, _w, _h, % SETTING_MATCH_WINDOW_TITLE_NAME
+            if not _x
+                _x := 0
+            if not _y
+                _y := 0
+            if not _w
+                _w := A_ScreenWidth
+            if not _h
+                _h := A_ScreenHeight
+
+            _thickness := SETTING_CROSSHAIR_WIDTH + (SETTING_CROSSHAIR_BORDER_WIDTH * 2)
+            _height := SETTING_CROSSHAIR_HEIGHT + (SETTING_CROSSHAIR_BORDER_WIDTH * 2)
+
+            ; -- vertical outer part
+            x := _x + ((_w + SETTING_CROSSHAIR_OFFSET_X - _thickness) / 2)
+            y := _y + ((_h + SETTING_CROSSHAIR_OFFSET_Y - _height) / 2)
+            WinMove, CH_OUTER_V, , % x, % y
+            x := _x + ((_w + SETTING_CROSSHAIR_OFFSET_X - _height) / 2)
+            y := _y + ((_h + SETTING_CROSSHAIR_OFFSET_Y - _thickness) / 2)
+            WinMove, CH_OUTER_H, , % x, % y
+            ; -- vertical inner part
+            x := _x + ((_w + SETTING_CROSSHAIR_OFFSET_X - SETTING_CROSSHAIR_WIDTH) / 2)
+            y := _y + ((_h + SETTING_CROSSHAIR_OFFSET_Y - SETTING_CROSSHAIR_HEIGHT) / 2)
+            WinMove, CH_INNER_V, , % x, % y
+            ; -- horizontal inner part
+            x := _x + ((_w + SETTING_CROSSHAIR_OFFSET_X - SETTING_CROSSHAIR_HEIGHT) / 2)
+            y := _y + ((_h + SETTING_CROSSHAIR_OFFSET_Y - SETTING_CROSSHAIR_WIDTH) / 2)
+            WinMove, CH_INNER_H, , % x, % y
+
             if((WinActive(SETTING_MATCH_WINDOW_TITLE_NAME) or WinActive(PROGRAM_NAME)) and !WinExist("CH_OUTER_V"))
                 CrossHairOverlay.Show()
             Else
@@ -629,6 +669,6 @@ ACTIVE_WINDOW_CHECK:
         }
         return
 
-    GuiClose:
+    MainGuiClose:
         ExitApp
         return

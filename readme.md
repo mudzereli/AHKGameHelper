@@ -27,6 +27,7 @@ Here are some examples of what this program can assist with:
 - Optionally only trigger when window is matched
 
 ### Change Log
+- **1.0.1**: Gui Close Fix. Tweak Crosshair to sticky to window if matching window enabled.
 - **1.0.0**: Initial Release
 
 ### Suggestions?
